@@ -1,5 +1,8 @@
-export { DeadlineCalculator } from './deadlines-calculator'
-export { CalendarProvider } from './calendar-provider'
+export {
+  DeadlineCalculator,
+  DeadlineCalculatorOptions
+} from './deadlines-calculator'
+export { CalendarProvider, CalendarProviderOptions } from './calendar-provider'
 
 export * from './helpers'
 export * from './holidays'

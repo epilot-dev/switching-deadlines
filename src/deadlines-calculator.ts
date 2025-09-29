@@ -9,6 +9,21 @@ import type { SwitchingCase } from './types'
 import { normalizeDate, toISODateString } from './utils'
 
 /**
+ * Options for configuring a {@link DeadlineCalculator}.
+ */
+export interface DeadlineCalculatorOptions {
+  /**
+   * Custom holiday calendar provider used for working day calculations.
+   */
+  calendarProvider?: CalendarProvider
+
+  /**
+   * Override default deadline rules with custom business logic.
+   */
+  customRules?: DeadlineRule[]
+}
+
+/**
  * Calculator for determining deadline dates and validating start dates for utility switching cases.
  *
  * Handles different switching scenarios including power and gas contracts,
@@ -36,17 +51,21 @@ export class DeadlineCalculator {
   /**
    * Creates a new DeadlineCalculator instance.
    *
-   * @param options - Optional configuration options for the calculator
-   * @param options.calendarProvider - Custom holiday calendar provider for working day calculations
-   * @param options.customRules - Override default deadline rules with custom business logic
+   * @param options - Optional configuration options for the calculator.
+   *
+   * @example
+   * ```typescript
+   * // Default: built-in calendar + default rules
+   * const calc = new DeadlineCalculator();
+   *
+   * // With a custom calendar and rules
+   * const calcCustom = new DeadlineCalculator({
+   *   calendarProvider: new CalendarProvider(),
+   *   customRules: [], // custom DeadlineRule objects
+   * });
+   * ```
    */
-  constructor(options?: {
-    /** Custom holiday calendar provider */
-    calendarProvider?: CalendarProvider
-
-    /** Override default deadline rules */
-    customRules?: DeadlineRule[]
-  }) {
+  constructor(options?: DeadlineCalculatorOptions) {
     // Use provided calendar or create a new one with default settings
     this.calendarProvider = options?.calendarProvider ?? new CalendarProvider()
 

@@ -14,6 +14,33 @@ import versionInfo from './version.json' with { type: 'json' }
 type HolidayMap = Map<string, Holiday>
 
 /**
+ * Options for configuring a {@link CalendarProvider}.
+ */
+export interface CalendarProviderOptions {
+  /**
+   * Custom calendar configuration.
+   */
+  customCalendar?: {
+    /**
+     * Array of custom holidays to include.
+     */
+    holidays?: CustomHolidayConfig[]
+
+    /**
+     * Version information for the custom calendar.
+     */
+    version?: CalendarVersion
+  }
+
+  /**
+   * Whether to include special holidays from the library.
+   *
+   * @defaultValue true
+   */
+  useSpecialHolidays?: boolean
+}
+
+/**
  * Calendar provider that manages holidays, working days, and date calculations.
  *
  * This class provides functionality for:
@@ -54,11 +81,7 @@ export class CalendarProvider {
   /**
    * Creates a new CalendarProvider instance.
    *
-   * @param options - Configuration options for the calendar
-   * @param options.customCalendar - Custom calendar configuration
-   * @param options.customCalendar.holidays - Array of custom holidays to include
-   * @param options.customCalendar.version - Version information for custom calendar
-   * @param options.useSpecialHolidays - Whether to include special holidays from the library (default: true)
+   * @param options - Optional configuration options for the calendar.
    *
    * @example
    * ```typescript
@@ -67,38 +90,32 @@ export class CalendarProvider {
    *     holidays: [
    *       {
    *         date: '2024-03-17',
-   *         name: 'St. Patrick\'s Day',
+   *         name: "St. Patrick's Day",
    *         type: HolidayType.SPECIAL_HOLIDAY,
-   *         description: 'Irish cultural celebration'
-   *       }
+   *         description: 'Irish cultural celebration',
+   *       },
    *     ],
-   *     version: { version: '1.0.0', year: 2024, lastUpdated: '2024-01-01T00:00:00Z' }
+   *     version: { version: '1.0.0', year: 2024, lastUpdated: '2024-01-01T00:00:00Z' },
    *   },
-   *   useSpecialHolidays: true
+   *   useSpecialHolidays: true,
    * });
    * ```
    */
-  constructor(options?: {
-    customCalendar?: {
-      holidays?: CustomHolidayConfig[]
-      version?: CalendarVersion
-    }
-    useSpecialHolidays?: boolean // Default true
-  }) {
-    this.customHolidays = (options?.customCalendar?.holidays ?? []).map(
-      (ch) => ({
-        date: ch.date,
-        name: ch.name,
-        type: ch.type ?? HolidayType.SPECIAL_HOLIDAY,
-        bundeslaender: ch.bundeslaender ?? [],
-        description: ch.description
-      })
-    )
+  constructor(options?: CalendarProviderOptions) {
+    const { customCalendar, useSpecialHolidays = true } = options ?? {}
 
-    this.version = options?.customCalendar?.version ?? versionInfo
+    this.customHolidays = (customCalendar?.holidays ?? []).map((ch) => ({
+      date: ch.date,
+      name: ch.name,
+      type: ch.type ?? HolidayType.SPECIAL_HOLIDAY,
+      bundeslaender: ch.bundeslaender ?? [],
+      description: ch.description
+    }))
+
+    this.version = customCalendar?.version ?? versionInfo
 
     // Include special holidays provided by library by default
-    this.useSpecialHolidays = options?.useSpecialHolidays ?? true
+    this.useSpecialHolidays = useSpecialHolidays
   }
 
   /**
