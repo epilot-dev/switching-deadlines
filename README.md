@@ -1,6 +1,6 @@
 # epilot Contract Switching Deadlines Utilities
 
-A TypeScript library for handling German energy market compliance requirements, specifically supplier switching deadlines as defined by **GPKE** (power) and **GeLi Gas** (natural gas).
+A TypeScript library for handling German energy market compliance requirements, specifically supplier switching deadlines as defined by **GPKE** (power) and **GeLi Gas** (gas).
 
 This library is regularly updated to reflect the latest calendar updates. You can find the changelog at [CHANGELOG.md](CHANGELOG.md).
 
