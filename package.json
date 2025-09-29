@@ -1,0 +1,72 @@
+{
+  "name": "@epilot/switching-deadlines",
+  "version": "0.1.0-alpha",
+  "description": "Energy supplier contract switching deadlings for the German energy market after GPKE/GeLi Gas",
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epilot-dev/switching-deadlines.git"
+  },
+  "homepage": "https://github.com/epilot-dev/switching-deadlines/README.md",
+  "files": [
+    "README.md",
+    "dist/**/*",
+    "!*.map",
+    "!*.test.*",
+    "!**/*.test.*",
+    "!node_modules",
+    "!src",
+    "!*.config.js"
+  ],
+  "scripts": {
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage",
+    "test:ui": "vitest --ui",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
+    "bundle-definition": "node esbuild.config.js",
+    "build": "pnpm run clean && tsc && pnpm run bundle-definition",
+    "lint": "eslint src --ext js,ts,tsx --cache --color",
+    "lint:fix": "eslint src --ext js,ts,tsx --cache --color --fix",
+    "clean": "rimraf dist coverage",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run build",
+    "gen-docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --out docs src && echo '{ \"label\": \"Switching Deadlines Library\", \"position\": 0 }' > docs/_category_.json"
+  },
+  "keywords": [],
+  "author": "epilot GmbH",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "date-easter": "^1.0.3",
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "@epilot/eslint-config": "^3.0.5",
+    "@eslint/js": "^9.35.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "esbuild": "^0.25.9",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "rimraf": "^6.0.1",
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.0",
+    "vitest": "^3.2.4"
+  }
+}
