@@ -41,7 +41,7 @@
     "clean": "rimraf dist coverage",
     "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run build",
-    "gen-docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --out docs src && echo '{ \"label\": \"Switching Deadlines Library\", \"position\": 0 }' > docs/_category_.json"
+    "gen-docs": "rm -rf docs && typedoc --plugin typedoc-plugin-markdown --out docs src/index.ts && echo '{ \"label\": \"Switching Deadlines Library\", \"position\": 0 }' > docs/_category_.json"
   },
   "keywords": [],
   "author": "epilot GmbH",

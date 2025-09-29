@@ -78,9 +78,11 @@ console.log(
 )
 ```
 
+Check [EXAMPLES.md](EXAMPLES.md) for more usage examples.
+
 ## 📖 Documentation
 
-Comprehensive usage examples and background information are available in the 👉 [epilot dev center](https://docs.epilot.io/docs/deadlines/intro).
+Comprehensive documentation and background information are available in the 👉 [epilot dev center](https://docs.epilot.io/docs/deadlines/intro).
 
 ## 📜 Disclaimer
 

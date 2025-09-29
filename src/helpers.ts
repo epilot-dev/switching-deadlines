@@ -40,14 +40,13 @@ export function calculateDeadline(
  * ```typescript
  * import { validateDate, Commodity, UseCase } from '@epilot/switching-deadlines';
  *
- * const result = validateDate('2025-10-05', {
+ * const isValid = validateDate('2025-10-05', {
  *   commodity: Commodity.POWER,
  *   useCase: UseCase.SWITCH,
  *   requiresTermination: true
  * });
  *
- * console.log(result.isValid); // false
- * console.log(result.earliestValidDate); // Date object for 2025-10-07
+ * console.log(isValid); // false
  * ```
  */
 export function validateDate(
