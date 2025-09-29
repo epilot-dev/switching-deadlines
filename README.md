@@ -2,7 +2,7 @@
 
 A TypeScript library for handling German energy market compliance requirements, specifically supplier switching deadlines as defined by **GPKE** (power) and **GeLi Gas** (gas).
 
-This library is regularly updated to reflect the latest calendar updates. You can find the changelog at [CHANGELOG.md](CHANGELOG.md).
+This library is regularly updated to reflect the latest calendar updates. You can find the changelog at [here](CHANGELOG.md).
 
 ## ✨ Features
 
@@ -77,10 +77,7 @@ console.log(
   `${`The earliest start date is ${relocationResult.earliestStartDate} for relocation and ${switchResult.earliestStartDate} for switching`}`
 )
 ```
-
-Check [EXAMPLES.md](EXAMPLES.md) for more usage examples.
-
-## 📖 Documentation
+You can find more information in the 📖 [usage examples](EXAMPLES.md).
 
 Comprehensive documentation and background information are available in the 👉 [epilot dev center](https://docs.epilot.io/docs/deadlines/intro).
 

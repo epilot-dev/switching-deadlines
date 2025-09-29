@@ -1,6 +1,6 @@
-# Usage Examples
+# 📖 Usage Examples
 
-This section provides examples of typical usage scenarios. For detailed information on how to use the library, please refer to the complete [documentation](https://docs.epilot.io/docs/deadlines/deadlines-library/).
+This section provides examples of typical usage scenarios. For detailed information on how to use the library, please refer to the complete [documentation](https://docs.epilot.io/docs/deadlines/deadlines-library/index/).
 
 ## Calculating a single deadline
 
@@ -131,7 +131,7 @@ const calculator = new DeadlineCalculator({
 
 ## Checking the library version
 
-Tp verify that your library installation contains the latest holiday updates and is up to date.
+To verify that your library installation contains the latest holiday updates and is up to date.
 
 ### Example
 
