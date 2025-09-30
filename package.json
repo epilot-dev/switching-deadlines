@@ -1,6 +1,6 @@
 {
   "name": "@epilot/switching-deadlines",
-  "version": "0.1.0-alpha",
+  "version": "2025.1.4",
   "description": "Energy supplier contract switching deadlings for the German energy market after GPKE/GeLi Gas",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
