@@ -1,3 +1,5 @@
+import { addDays, addMinutes, subDays } from 'date-fns'
+
 export const normalizeDate = (date: Date | string): Date => {
   const result =
     typeof date === 'string'
@@ -12,5 +14,21 @@ export const normalizeDate = (date: Date | string): Date => {
 }
 
 export const toISODateString = (date: Date): string => {
-  return date.toISOString().split('T')[0]
+  return normalizeDate(date).toISOString().split('T')[0]
+}
+
+export function addDaysDstSafe(date: Date, amount: number) {
+  const endDate = addDays(date, amount)
+  return addMinutes(
+    endDate,
+    date.getTimezoneOffset() - endDate.getTimezoneOffset()
+  )
+}
+
+export function subDaysDstSafe(date: Date, amount: number) {
+  const endDate = subDays(date, amount)
+  return addMinutes(
+    endDate,
+    date.getTimezoneOffset() - endDate.getTimezoneOffset()
+  )
 }

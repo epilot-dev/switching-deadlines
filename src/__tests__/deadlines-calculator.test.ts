@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { DeadlineCalculator } from '../deadlines-calculator'
 import { Commodity, UseCase } from '../rules/types'
 import type { SwitchingCase } from '../types'
@@ -10,8 +10,8 @@ describe('DeadlineCalculator', () => {
     calculator = new DeadlineCalculator()
   })
 
-  describe('Power Deadlines (24h switching)', () => {
-    it('should calculate power relocation (1 working day)', () => {
+  describe('Power Deadlines (24h switching) - calculate from input date', () => {
+    it('should calculate power relocation (1 working day) (input is string)', () => {
       const switchingCase: SwitchingCase = {
         commodity: Commodity.POWER,
         useCase: UseCase.RELOCATION,
@@ -24,12 +24,36 @@ describe('DeadlineCalculator', () => {
       )
 
       expect(result.earliestStartDateString).toBe('2025-10-03') // Friday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-03T00:00:00+00:00')
+      )
       expect(result.workingDaysApplied).toBe(1)
       expect(result.isRetrospective).toBe(false)
       expect(result.ruleApplied.id).toBe('power_relocation')
     })
 
-    it('should calculate power switch without termination (1 working day)', () => {
+    it('should calculate power relocation (1 working day) (input is date)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.POWER,
+        useCase: UseCase.RELOCATION,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        new Date('2025-10-01') // Wednesday
+      )
+
+      expect(result.earliestStartDateString).toBe('2025-10-03') // Friday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-03T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(1)
+      expect(result.isRetrospective).toBe(false)
+      expect(result.ruleApplied.id).toBe('power_relocation')
+    })
+
+    it('should calculate power switch without termination (1 working day) (input is string)', () => {
       const switchingCase: SwitchingCase = {
         commodity: Commodity.POWER,
         useCase: UseCase.SWITCH,
@@ -42,12 +66,36 @@ describe('DeadlineCalculator', () => {
       )
 
       expect(result.earliestStartDateString).toBe('2025-10-03') // Friday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-03T00:00:00+00:00')
+      )
       expect(result.workingDaysApplied).toBe(1)
       expect(result.isRetrospective).toBe(false)
       expect(result.ruleApplied.id).toBe('power_switch_no_termination')
     })
 
-    it('should calculate power switch with termination (2 working days)', () => {
+    it('should calculate power switch without termination (1 working day) (input is date)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.POWER,
+        useCase: UseCase.SWITCH,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        new Date('2025-10-01') // Wednesday
+      )
+
+      expect(result.earliestStartDateString).toBe('2025-10-03') // Friday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-03T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(1)
+      expect(result.isRetrospective).toBe(false)
+      expect(result.ruleApplied.id).toBe('power_switch_no_termination')
+    })
+
+    it('should calculate power switch with termination (2 working days) (input is string)', () => {
       const switchingCase: SwitchingCase = {
         commodity: Commodity.POWER,
         useCase: UseCase.SWITCH,
@@ -61,14 +109,104 @@ describe('DeadlineCalculator', () => {
 
       // Should skip Oct 3 (holiday), Oct 4-5 (weekend), so earliest is Oct 7
       expect(result.earliestStartDateString).toBe('2025-10-07') // Tuesday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-07T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(2)
+      expect(result.isRetrospective).toBe(false)
+      expect(result.ruleApplied.id).toBe('power_switch_with_termination')
+    })
+
+    it('should calculate power switch with termination (2 working days) (input is date)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.POWER,
+        useCase: UseCase.SWITCH,
+        requiresTermination: true
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        new Date('2025-10-01') // Wednesday
+      )
+
+      // Should skip Oct 3 (holiday), Oct 4-5 (weekend), so earliest is Oct 7
+      expect(result.earliestStartDateString).toBe('2025-10-07') // Tuesday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-07T00:00:00+00:00')
+      )
       expect(result.workingDaysApplied).toBe(2)
       expect(result.isRetrospective).toBe(false)
       expect(result.ruleApplied.id).toBe('power_switch_with_termination')
     })
   })
 
-  describe('Gas Deadlines', () => {
-    it('should calculate gas switch without termination (10 working days)', () => {
+  describe('Power Deadlines (24h switching) - calculate for today', () => {
+    beforeEach(() => {
+      vi.useFakeTimers().setSystemTime(new Date('2025-10-01')) // Wednesday
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('should calculate power relocation (1 working day)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.POWER,
+        useCase: UseCase.RELOCATION,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(switchingCase)
+
+      expect(result.earliestStartDateString).toBe('2025-10-03') // Friday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-03T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(1)
+      expect(result.isRetrospective).toBe(false)
+      expect(result.ruleApplied.id).toBe('power_relocation')
+    })
+
+    it('should calculate power switch without termination (1 working day)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.POWER,
+        useCase: UseCase.SWITCH,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(switchingCase)
+
+      expect(result.earliestStartDateString).toBe('2025-10-03') // Friday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-03T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(1)
+      expect(result.isRetrospective).toBe(false)
+      expect(result.ruleApplied.id).toBe('power_switch_no_termination')
+    })
+
+    it('should calculate power switch with termination (2 working days)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.POWER,
+        useCase: UseCase.SWITCH,
+        requiresTermination: true
+      }
+
+      const result = calculator.calculateEarliestStartDate(switchingCase)
+
+      // Should skip Oct 3 (holiday), Oct 4-5 (weekend), so earliest is Oct 7
+      expect(result.earliestStartDateString).toBe('2025-10-07') // Tuesday
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-07T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(2)
+      expect(result.isRetrospective).toBe(false)
+      expect(result.ruleApplied.id).toBe('power_switch_with_termination')
+    })
+  })
+
+  describe('Gas Deadlines - calculate from input date', () => {
+    it('should calculate gas switch without termination (10 working days) (input is string)', () => {
       const switchingCase: SwitchingCase = {
         commodity: Commodity.GAS,
         useCase: UseCase.SWITCH,
@@ -81,6 +219,138 @@ describe('DeadlineCalculator', () => {
       )
 
       expect(result.earliestStartDateString).toBe('2025-10-17') // Friday (10 working days later)
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-17T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(10)
+      expect(result.ruleApplied.id).toBe('gas_switch_no_termination')
+    })
+
+    it('should calculate gas switch without termination (10 working days) (input is date)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.SWITCH,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        new Date('2025-10-01') // Wednesday
+      )
+
+      expect(result.earliestStartDateString).toBe('2025-10-17') // Friday (10 working days later)
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-17T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(10)
+      expect(result.ruleApplied.id).toBe('gas_switch_no_termination')
+    })
+
+    it('should calculate gas switch with termination (13 working days) (input is string)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.SWITCH,
+        requiresTermination: true
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        '2025-10-01' // Wednesday
+      )
+
+      expect(result.earliestStartDateString).toBe('2025-10-22') // Wednesday (13 working days later)
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-22T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(13)
+      expect(result.ruleApplied.id).toBe('gas_switch_with_termination')
+    })
+
+    it('should calculate gas switch with termination (13 working days) (input is date)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.SWITCH,
+        requiresTermination: true
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        new Date('2025-10-01') // Wednesday
+      )
+
+      expect(result.earliestStartDateString).toBe('2025-10-22') // Wednesday (13 working days later)
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-22T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(13)
+      expect(result.ruleApplied.id).toBe('gas_switch_with_termination')
+    })
+
+    it('should allow retrospective switch for gas relocation within 6 weeks (input is string)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.RELOCATION,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        '2025-10-01' // Wednesday
+      )
+
+      expect(result.isRetrospective).toBe(true)
+      expect(result.earliestStartDateString).toBe('2025-08-20')
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-08-20T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(0)
+      expect(result.ruleApplied.allowsRetrospective).toBe(true)
+    })
+
+    it('should allow retrospective switch for gas relocation within 6 weeks (input is date)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.RELOCATION,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(
+        switchingCase,
+        new Date('2025-10-01') // Wednesday
+      )
+
+      expect(result.isRetrospective).toBe(true)
+      expect(result.earliestStartDateString).toBe('2025-08-20')
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-08-20T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(0)
+      expect(result.ruleApplied.allowsRetrospective).toBe(true)
+    })
+  })
+
+  describe('Gas Deadlines - calculate for today', () => {
+    beforeEach(() => {
+      vi.useFakeTimers().setSystemTime(new Date('2025-10-01')) // Wednesday
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('should calculate gas switch without termination (10 working days)', () => {
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.SWITCH,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(switchingCase)
+
+      expect(result.earliestStartDateString).toBe('2025-10-17') // Friday (10 working days later)
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-17T00:00:00+00:00')
+      )
       expect(result.workingDaysApplied).toBe(10)
       expect(result.ruleApplied.id).toBe('gas_switch_no_termination')
     })
@@ -98,6 +368,9 @@ describe('DeadlineCalculator', () => {
       )
 
       expect(result.earliestStartDateString).toBe('2025-10-22') // Wednesday (13 working days later)
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-10-22T00:00:00+00:00')
+      )
       expect(result.workingDaysApplied).toBe(13)
       expect(result.ruleApplied.id).toBe('gas_switch_with_termination')
     })
@@ -116,6 +389,9 @@ describe('DeadlineCalculator', () => {
 
       expect(result.isRetrospective).toBe(true)
       expect(result.earliestStartDateString).toBe('2025-08-20')
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-08-20T00:00:00+00:00')
+      )
       expect(result.workingDaysApplied).toBe(0)
       expect(result.ruleApplied.allowsRetrospective).toBe(true)
     })
@@ -203,6 +479,54 @@ describe('DeadlineCalculator', () => {
 
       expect(result.workingDaysApplied).toBe(5)
       expect(result.ruleApplied.id).toBe('custom_power')
+    })
+  })
+
+  describe('Daylight Saving Time', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('should handle the transition from normal time to daylight saving time', () => {
+      vi.setSystemTime(new Date('2025-04-25')) // Tuesday
+
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.SWITCH,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(switchingCase)
+
+      expect(result.earliestStartDateString).toBe('2025-05-14')
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-05-14T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(10)
+    })
+
+    it('should handle the transition from daylight saving to normal time', () => {
+      vi.setSystemTime(new Date('2025-11-03')) // Monday
+
+      const switchingCase: SwitchingCase = {
+        commodity: Commodity.GAS,
+        useCase: UseCase.RELOCATION,
+        requiresTermination: false
+      }
+
+      const result = calculator.calculateEarliestStartDate(switchingCase)
+
+      expect(result.isRetrospective).toBe(true)
+      expect(result.earliestStartDateString).toBe('2025-09-22')
+      expect(result.earliestStartDate).toStrictEqual(
+        new Date('2025-09-22T00:00:00+00:00')
+      )
+      expect(result.workingDaysApplied).toBe(0)
+      expect(result.ruleApplied.allowsRetrospective).toBe(true)
     })
   })
 

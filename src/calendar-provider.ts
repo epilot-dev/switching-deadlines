@@ -1,4 +1,4 @@
-import { addDays, isSunday, isWeekend } from 'date-fns'
+import { isSunday, isWeekend } from 'date-fns'
 import type { Holiday, DayInfo, CustomHolidayConfig } from './holidays'
 import {
   getFixedHolidays,
@@ -8,7 +8,7 @@ import {
   filterHolidaysForYear
 } from './holidays'
 import type { CalendarVersion } from './types'
-import { normalizeDate, toISODateString } from './utils'
+import { addDaysDstSafe, normalizeDate, toISODateString } from './utils'
 import versionInfo from './version.json' with { type: 'json' }
 
 type HolidayMap = Map<string, Holiday>
@@ -297,14 +297,14 @@ export class CalendarProvider {
     let workingDaysAdded = 0
 
     while (workingDaysAdded < workingDays) {
-      date = addDays(date, 1)
+      date = addDaysDstSafe(date, 1)
       if (this.isWorkingDay(date)) {
         workingDaysAdded++
       }
     }
 
     // return the next day
-    date = addDays(date, 1)
+    date = addDaysDstSafe(date, 1)
 
     return date
   }
@@ -340,7 +340,7 @@ export class CalendarProvider {
       if (dayInfo.isWorkingDay) {
         days.push(dayInfo)
       }
-      current = addDays(current, 1)
+      current = addDaysDstSafe(current, 1)
     }
 
     return days
@@ -379,7 +379,7 @@ export class CalendarProvider {
       if (!dayInfo.isWorkingDay) {
         days.push(dayInfo)
       }
-      current = addDays(current, 1)
+      current = addDaysDstSafe(current, 1)
     }
 
     return days
@@ -426,10 +426,10 @@ export class CalendarProvider {
    */
   public getNextWorkingDay(date: Date | string): Date {
     let nextDay = normalizeDate(date)
-    nextDay = addDays(nextDay, 1)
+    nextDay = addDaysDstSafe(nextDay, 1)
 
     while (!this.isWorkingDay(nextDay)) {
-      nextDay = addDays(nextDay, 1)
+      nextDay = addDaysDstSafe(nextDay, 1)
     }
 
     return nextDay
@@ -453,10 +453,10 @@ export class CalendarProvider {
    */
   public getPreviousWorkingDay(date: Date | string): Date {
     let prevDay = normalizeDate(date)
-    prevDay = addDays(prevDay, -1)
+    prevDay = addDaysDstSafe(prevDay, -1)
 
     while (!this.isWorkingDay(prevDay)) {
-      prevDay = addDays(prevDay, -1)
+      prevDay = addDaysDstSafe(prevDay, -1)
     }
 
     return prevDay

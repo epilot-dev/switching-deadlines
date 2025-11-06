@@ -1,4 +1,4 @@
-import { differenceInDays, subDays } from 'date-fns'
+import { differenceInDays } from 'date-fns'
 import { CalendarProvider } from './calendar-provider'
 import {
   DEFAULT_DEADLINE_RULES,
@@ -6,7 +6,7 @@ import {
   type DeadlineRule
 } from './rules'
 import type { SwitchingCase } from './types'
-import { normalizeDate, toISODateString } from './utils'
+import { normalizeDate, subDaysDstSafe, toISODateString } from './utils'
 
 /**
  * Options for configuring a {@link DeadlineCalculator}.
@@ -129,7 +129,7 @@ export class DeadlineCalculator {
     if (rule.allowsRetrospective) {
       // Handle switching cases with retrospective switching
       isRetrospective = true
-      earliestStartDate = subDays(from, rule.maxRetrospectiveDays ?? 0)
+      earliestStartDate = subDaysDstSafe(from, rule.maxRetrospectiveDays ?? 0)
     } else {
       // Normal forward calculation
       isRetrospective = false
