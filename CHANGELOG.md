@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2027.1.0] - 2026-07-31
+
+This version was published to match the currently published calendar revision. There were no changes in the code.
+
+Full Changelog:
+https://github.com/epilot-dev/switching-deadlines/commits/v2027.1.0
+
+## [v2026.1.0] - Skipped
+
+This version was skipped due to no changes to the calendar required.
+
 ## [v2025.1.2] - 2025-11-06
 
 Fixes:
